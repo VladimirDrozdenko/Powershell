@@ -3,6 +3,12 @@ param (
   [string]$input_file
 )
 
+function IsValidNumber() {
+  param ($str)
+
+  return $str -match "^\d+(,\d{3})*\.(\d{1,2})"
+}
+
 function ExtractAmmount {
   param ($line)
 
@@ -22,7 +28,14 @@ function ExtractAmmount {
 
   $sum_str = $items[$items.Count - 1];
 
-  if ($sum_str -match "^[+-]?\d+(,\d{3})*\.(\d{1,2})") {
+  if ($sum_str.StartsWith("(") -and $sum_str.EndsWith(")")) {
+    $just_number = $sum_str.Substring(1, $sum_str.Length - 2);
+    if (IsValidNumber($just_number)) {
+      return $sum_str
+    }
+  }
+
+  if (IsValidNumber($sum_str)) {
     return $sum_str
   }
 
